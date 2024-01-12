@@ -1,0 +1,5 @@
+192.168.160.103: what ip scanner found
+169.254.134.138: what was default in VNC tight viewer
+
+What finally worked?
+169.254.134.138
