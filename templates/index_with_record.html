@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Video Feed with Record</title>
+</head>
+<body>
+    <img id="videoFeed" src="{{ url_for('video_feed') }}" width="640" height="480">
+    <br>
+    <button onclick="startRecording()">Start Recording</button>
+    <button onclick="stopRecording()">Stop Recording</button>
+    <button onclick="takeSnapshot()">Take Snapshot</button>
+
+    <script>
+        function startRecording() {
+            fetch('/start_record')
+                .then(response => response.text())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
+    
+        function stopRecording() {
+            fetch('/stop_record')
+                .then(response => response.text())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
+    
+        function takeSnapshot() {
+            var videoFeed = document.getElementById('videoFeed');
+            var canvas = document.createElement('canvas');
+            canvas.width = videoFeed.width;
+            canvas.height = videoFeed.height;
+            var context = canvas.getContext('2d');
+            context.drawImage(videoFeed, 0, 0, canvas.width, canvas.height);
+            
+            // Convert the canvas content to a data URL (PNG format)
+            var imgDataUrl = canvas.toDataURL('image/png');
+            
+            // Send the image data to the server
+            fetch('/save_snapshot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ imageData: imgDataUrl }),
+            })
+            .then(response => response.text())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
